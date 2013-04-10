@@ -1,0 +1,85 @@
+public void solve(MazePlay player) throws ThreadDeath
+ {
+   int r=0;int c=0;
+   dsearch(r,c,player);
+                   
+ }
+ 
+ public void dsearch(int r, int c, MazePlay player){
+   if (r==rows-1 && c==cols-1){
+     player.setState(r,c,MazePlay.F);
+     return;
+   }
+   int state=player.getState(r,c);
+   if (state==MazePlay.E)
+     player.setState(r,c,MazePlay.F);
+   if (state==MazePlay.F)
+     player.setState(r,c,MazePlay.B);
+   
+   if (matrix[r][c][0]==false)
+     dsearch(r,c+1,player);
+   if (matrix[r][c][1]==false)
+     dsearch(r+1,c,player);
+   
+ }
+ 
+    /**
+     * Creates a randomly generated maze of a given size.
+     * <p>
+     * <b>You must implement this method.</b>
+     *
+     * 
+     * @param   rows           the maze height (vertical dimension, number of rows)
+     * @param   cols           the maze width (horizontal dimension, number of columns)
+     */
+    public Maze(int rows, int cols)
+    {
+  title = String.format("rand(%dx%d)", rows, cols);
+        this.rows = rows;
+        this.cols = cols;
+        matrix=new boolean[rows][cols][2];
+        
+        DisjointSets set= new DisjointSets(rows*cols);
+        
+        //make all positions in the maze have all possible walls.
+        for (int i=0; i<rows; i++){
+          for (int j=0; j<cols; j++){
+            setBot(i,j,true);
+            setRight(i,j,true);
+          }
+        }
+        
+        
+        Random rn= new Random();
+        int count=0;
+
+        while (count<rows*cols -1 ){
+          int spot1= rn.nextInt(rows*cols);
+          int w= rn.nextInt(2);
+          
+          if (w==0) {   //wall is a right-wall
+            if ((spot1+1)%cols!=0){
+                int spot2=set.find(spot1+1);
+                if (set.find(spot1)!=spot2){
+                   setRight(spot1/cols,spot1%cols,false);
+                   set.union(spot1,spot2);
+                   count+=1;
+                }
+            }
+          }
+          
+          else if (w==1) {    // wall is a bottom wall
+              if (spot1+cols<(rows*cols)){
+                int spot2=set.find(spot1+cols);
+                if (set.find(spot1)!=spot2){
+
+                   setBot(spot1/cols,spot1%cols,false);
+                   set.union(spot1,spot2);
+                   count+=1;
+                }
+              }
+            
+            
+          }
+        }
+    }
